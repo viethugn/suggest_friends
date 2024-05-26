@@ -48,11 +48,18 @@ def goi_y_kb():
           if obj_B["hometown"]['id'] == obj_A["hometown"]['id']:
               common_attributes += .1
               conditions_met["hometown"] = .1
-      if "work" in obj_A:
-        if "work" in obj_B:
-          if obj_B['work'][0]['employer']['id'] == obj_A["work"][0]['employer']['id']:
-              common_attributes += .4
-              conditions_met["work"] = .4
+      if "work" in obj_A and "work" in obj_B:
+        work_match_found = False  # Cờ để theo dõi xem có công việc trùng khớp nào được tìm thấy hay không
+        for job_A in obj_A["work"]:
+            for job_B in obj_B["work"]:
+                if job_A['employer']['id'] == job_B['employer']['id']:
+                    common_attributes += 0.4
+                    if not work_match_found:  # Nếu chưa tìm thấy công việc trùng khớp nào trước đó
+                        conditions_met["work"] = 0.4
+                        work_match_found = True  # Đánh dấu rằng đã tìm thấy công việc trùng khớp
+                    break  # Khi tìm thấy một công việc trùng khớp, không cần kiểm tra các công việc khác
+            if work_match_found:  # Nếu đã tìm thấy công việc trùng khớp, không cần tiếp tục vòng lặp ngoài
+                break
       return common_attributes, conditions_met
 
   def compute_jaccard_similarity(user_attr, other_attr):
